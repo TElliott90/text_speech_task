@@ -5,6 +5,26 @@ export default function FileUploadPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState("");
 
+  async function handleConvertClick() {
+    const formData = new FormData();
+    if (!selectedFile) {
+      setError("No document selected");
+      return;
+    }
+
+    formData.append("file", selectedFile);
+
+    fetch(import.meta.env.VITE_API_ENDPOINT + "/documents/convert-to-speech", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => console.log("Response:", response))
+      .catch((error) => {
+        console.error("Error:", error);
+        alert("Error: " + error.message);
+      });
+  }
+
   return (
     <main className="upload-page">
       <section className="upload-card" aria-labelledby="upload-heading">
@@ -36,7 +56,12 @@ export default function FileUploadPage() {
           )}
         </div>
 
-        <button className="send-button" type="button" disabled={!selectedFile}>
+        <button
+          className="send-button"
+          type="button"
+          disabled={!selectedFile}
+          onClick={handleConvertClick}
+        >
           Convert
         </button>
       </section>
