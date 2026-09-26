@@ -2,8 +2,8 @@ import { BadRequestException, PayloadTooLargeException } from '@nestjs/common';
 import { mkdtemp, readFile, readdir, rm } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join } from 'path';
-import { MAX_DOCUMENT_SIZE } from '../document.constants';
-import { DocumentService } from '../document.service';
+import { MAX_DOCUMENT_SIZE } from '../documents.constants';
+import { DocumentService } from '../documents.service';
 
 describe('DocumentService', () => {
   let directory: string;

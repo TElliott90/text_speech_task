@@ -32,35 +32,53 @@ NestJs
 
 ### Commits:
 
-**Frontend Setup**
+#### Frontend Setup
+
 To start off the project, this monorepo will include a sub directory for the frontend and one for the backend. The frontend folder will be made using the `npm install @vite/latest` command (executed by Codex) which will create a 'frontend' directory that includes all the necessary files within. Once created, the syntax from the template can start being removed and replaced with project code.
 
-**A user must be upload a file**
+#### A user must be able to upload a file
+
 I like to begin by starting to organising the directory, grouping relevant files together e.g. pages into a 'pages' directory, and shared components within a 'components' directory.
 
-**A file should be sent to backend where the AWS OCR service for text extraction**
+#### A file should be sent to backend where the AWS OCR service for text extraction
+
 For setting up the server, I installed the NestJs CLI as per the [instructions](https://docs.nestjs.com/first-steps) and used the nest command to initialise a new project titled 'backend' along with the core files, dependancies and a few templates. Similar to setting up the frontend, I reviewed the newly created project folder to see if there's anything unnecessary which could be removed. I kept the 'getHello' default route to initially test the connection between frontend and backend using a temporary button on the frontend which makes a call to the backend (and console logs any errors thrown). I initially encountered an error where the request was blocked by a CORS policy. I corrected the issue by enabling CORS on the server and specifying the expected origin of the request to grant access which solved the issue. Now that a connection's been made, it's time to setup the document module and routing the frontend request to the module's service for processing the fle upload.
 
-A few subsequent errors also surface where I needed to double check access to env variables from frontend using the vite (guide)[https://vite.dev/guide/env-and-mode]. A new 404 error was received after where the solution was to correct the env variable to point at the server 'localhost:3000', following the correction, the subsequent 404 was caused by the incorrect route of '/document/convert-to-speech' instead of '/documents/convert-to-speech'.
+A few subsequent errors also surface where I needed to double check access to env variables from frontend using the vite [guide](https://vite.dev/guide/env-and-mode). A new 404 error was received after where the solution was to correct the env variable to point at the server 'localhost:3000', following the correction, the subsequent 404 was caused by the incorrect route of '/document/convert-to-speech' instead of '/documents/convert-to-speech'.
 With the api now reaching the service, it was time for integrating with the text extraction service.
 
-**Text output must then be sent to AWS Polly (Eleven Labs?) for processing**
+#### Text output must then be sent to AWS Polly (Eleven Labs?) for processing
 
-**Audio file to be sent back to the user**
+After testing out AWS Textract with a sample document (see images)
 
-**The file can either be played or downloaded by the user**
+I decided it was not the right solution for my usecase. The service was great at text detection however, contextual extraction is what was needed, otherwise every text available on the document (page number, dates, text found within sample images etc ) would also be extracted and would require filtering. Using a gemini
 
-### Stretch Goals:
+- Installed Gemini dependancy and followed docs shown [here] (https://aistudio.google.com/docs/get-started?codelanguage=javascript)
+- Installation revealed 22 vulnerabilities (5 low, 10 moderate, 7 high), needed to run `npm audit fix --force` to fully resolve the vulnerability issues
 
-- Allow multiple files to be added by the user + drag and drop
-- Utilise AWS Lambda functions for processing requests via the cloud without the need of a running server
-- Refine UI for better user experience
+- Used google's [docs](https://aistudio.google.com/docs/document-processing?codelanguage=javascript) for sending files
+
+- Issue with document uploading
+
+- Issue with gemini authentication (not reading .env) Earlier npm audit fix force had caused dependency installation issues with incompaible prettier
+
+- Dependancy issue from older NestJs version
+
+#### Audio file to be sent back to the user
+
+#### The file can either be played or downloaded by the user
 
 ### Acceptance Criteria:
 
 - A user must be able to upload a file
 - Incorrect files formats must be rejected with a surfaced error message in a dialog
 - An audio file to be returned and temporarily stored locally on the user's device
+
+### Stretch Goals:
+
+- Allow multiple files to be added by the user + drag and drop
+- Utilise AWS Lambda functions for processing requests via the cloud without the need of a running server
+- Refine UI for better user experience
 
 ## Closing Remarks
 

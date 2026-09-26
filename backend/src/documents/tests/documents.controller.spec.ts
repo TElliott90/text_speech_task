@@ -1,5 +1,5 @@
-import { DocumentController } from '../document.controller';
-import { DocumentService } from '../document.service';
+import { DocumentController } from '../documents.controller';
+import { DocumentService } from '../documents.service';
 
 describe('DocumentController', () => {
   it('passes the uploaded file to the service and returns its result', async () => {

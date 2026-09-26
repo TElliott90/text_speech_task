@@ -5,14 +5,14 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { MAX_DOCUMENT_SIZE } from './document.constants';
-import { DocumentService } from './document.service';
+import { MAX_DOCUMENT_SIZE } from './documents.constants';
+import { DocumentsService } from './documents.service';
 import { DocumentDto } from './dto/document.dto';
 import { UploadDocumentDto } from './dto/upload-document.dto';
 
 @Controller('documents')
-export class DocumentController {
-  constructor(private readonly documentService: DocumentService) {}
+export class DocumentsController {
+  constructor(private readonly documentsService: DocumentsService) {}
 
   @Post('convert-to-speech')
   @UseInterceptors(
@@ -23,11 +23,15 @@ export class DocumentController {
   // async convertToSpeech(
   //   @UploadedFile() file: UploadDocumentDto,
   // ): Promise<DocumentDto> {
-  convertToSpeech(@UploadedFile() file: UploadDocumentDto): string {
+  async convertToSpeech(
+    @UploadedFile() file: UploadDocumentDto,
+  ): Promise<string> {
+    console.log('Received file:', file.originalname, 'Size:', file.size);
+
     // TODO: Extract Text from the document.
-    // const extractedText = await this.documentService.extractText(file);
+    const extractedText = await this.documentsService.extractText(file);
     // TODO: Convert the extracted text to speech.
     // await this.documentService.convertTextToSpeech(file, extractedText);
-    return this.documentService.upload(file);
+    return extractedText;
   }
 }

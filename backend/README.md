@@ -4,8 +4,12 @@
 
 ## Installation
 
+Use Node.js 20.11.1+ (20.x) or Node.js 22+. The backend uses NestJS 11
+with Express 5. The CLI's schematics dependency stays on 11.0.x to retain
+compatibility with the existing Prettier 2 setup.
+
 ```bash
-$ npm install
+$ npm ci
 ```
 
 ## Running the app
