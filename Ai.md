@@ -2,6 +2,10 @@
 
 Model - GPT-6 Astra (Light) via integrated Codex inside VSCode
 
+Primary use was generating basic components quickly, reducing time taken to troubleshoot and producing detailed README documentation which has been reviewed before submitting.
+
+Additional generated syntax was observered along with misunderstood instructions. Reviewing the output helps reduce unnecessary
+
 ## Commit 1 - "Frontend setup"
 
 - Prompt - “Initialise a directory titled 'frontend' with vite using react and typescript”
@@ -25,3 +29,5 @@ Model - GPT-6 Astra (Light) via integrated Codex inside VSCode
 ## Commit 5 - "Audio file to be sent back to the user"
 
 ## Commit 6 - "The file can either be played or downloaded by the user"
+
+Prompt - "Create a dialog for error messages within the ErrorModal.tsx file"

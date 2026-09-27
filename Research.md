@@ -58,15 +58,18 @@ I decided it was not the right solution for my usecase. The service was great at
 
 - Used google's [docs](https://aistudio.google.com/docs/document-processing?codelanguage=javascript) for sending files
 
-- Issue with document uploading
-
 - Issue with gemini authentication (not reading .env) Earlier npm audit fix force had caused dependency installation issues with incompaible prettier
 
-- Dependancy issue from older NestJs version
+- Dependancy issue from older NestJs version, updated version was able to resolve the aforementioned vulnerabilities.
 
 #### Audio file to be sent back to the user
 
+- 402 error using the API key with 'billing required' error message initial thought a paid plan was required however it was the voiceid that was being sent was not eligible on a free tier account.
+
 #### The file can either be played or downloaded by the user
+
+- Took some time to understand the concept of converting file data i.e the audio is being returned as a Stream
+- Decision was made to download directly after conversion was completed instead of utilising an audio player for simplicity sake.
 
 ### Acceptance Criteria:
 
@@ -82,4 +85,17 @@ I decided it was not the right solution for my usecase. The service was great at
 
 ## Closing Remarks
 
-For a web application, these fundamentals exist in most projects. A UI is presented to a user, requests are made (additional information may also be included), that request is then processed by the business logic where it either Creates, Reads, Updates, Deletes or Retrieves information for the user, which is then passed back and presented. This is, of course, an over simplification of the workflow and additional layers must also be applied to a 'happy route' such as error handling, testing, security considerations etc
+For a web application, the fundamentals of presenting a UI to a user, making requests to a server and processing that information before returning information exist in most projects. Despite this straightforward approach, there are many considerations such as tooling, services
+
+. This is, ofcourse, an over simplification of the workflow and additional layers must also be applied to a 'happy route' such as error handling, testing, security considerations etc
+
+Before exceeding limits, an example of the audio [output](./1.Example%20Files/Audio%20-%20Example%20Report-%20Current%20Cloud%20Technology%20Trends%20in%20the%20UK.mp3) was retrieved from this [file](./1.Example%20Files/Example%20Report-%20Current%20Cloud%20Technology%20Trends%20in%20the%20UK.pdf). The audio script alters from the document as the prompt used for extracting was requesting the key points from the document, which is not a bad thing depending if you're after a quick summary of key points of a large document. This should be taken into consideration and relayed back to the user to ensure they're not expecting a word-for-word extract or put in place an option which specifies how the document should be interpreted.
+
+### Notes
+
+- Larger projects would require seperate files for api calls, types etc
+- Improvements could be made to UI to better illustrate the ability to remove files
+- Could add an additional option to determine whether or not to extract all of the main text or just the key points (for long documents)
+- Conversion time can take a while, animated loading icon might help users with the wait.
+- Using LLM (Gemini) can risk from source document. Explicit prompt instructions must be used to faithfully follow the content.
+- A 5000 character limit is placed on the Eleven Labs service. Shorter

@@ -24,6 +24,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@elevenlabs/elevenlabs-js": "^2.69.0",
     "@google/genai": "^2.24.0",
     "@nestjs/common": "^11.2.6",
     "@nestjs/config": "^12.0.1",

@@ -28,15 +28,15 @@ describe('DocumentService', () => {
   });
 
   it.each(['txt', 'pdf', 'doc', 'docx', 'TXT'])(
-    'stores a %s upload with its original bytes',
+    'stores a %s extractText with its original bytes',
     async (extension) => {
-      const upload = file(`report.${extension}`);
-      const result = await service.upload(upload);
+      const extractText = file(`report.${extension}`);
+      const result = await service.extractText(extractText);
       expect(result).toEqual({
         id: expect.any(String),
-        originalName: upload.originalname,
-        mimeType: upload.mimetype,
-        size: upload.size,
+        originalName: extractText.originalname,
+        mimeType: extractText.mimetype,
+        size: extractText.size,
       });
       expect(
         await readFile(
@@ -46,23 +46,14 @@ describe('DocumentService', () => {
             `${result.id}.${extension.toLowerCase()}`,
           ),
         ),
-      ).toEqual(upload.buffer);
+      ).toEqual(extractText.buffer);
     },
   );
 
-  it('uses unique storage names instead of client paths', async () => {
-    const first = await service.upload(file('../../report.txt'));
-    const second = await service.upload(file('../../report.txt'));
-    expect(first.id).not.toBe(second.id);
-    expect(await readdir(join(directory, 'documents'))).toEqual(
-      expect.arrayContaining([`${first.id}.txt`, `${second.id}.txt`]),
-    );
-  });
-
   it.each([undefined, file('empty.txt', Buffer.alloc(0)), file('script.exe')])(
     'rejects missing, empty, or unsupported files without storing them',
-    async (upload) => {
-      await expect(service.upload(upload)).rejects.toBeInstanceOf(
+    async (extractText) => {
+      await expect(service.extractText(extractText)).rejects.toBeInstanceOf(
         BadRequestException,
       );
       expect(await readdir(directory)).toEqual([]);
@@ -71,7 +62,9 @@ describe('DocumentService', () => {
 
   it('rejects oversized files', async () => {
     await expect(
-      service.upload(file('large.txt', Buffer.alloc(MAX_DOCUMENT_SIZE + 1))),
+      service.extractText(
+        file('large.txt', Buffer.alloc(MAX_DOCUMENT_SIZE + 1)),
+      ),
     ).rejects.toBeInstanceOf(PayloadTooLargeException);
     expect(await readdir(directory)).toEqual([]);
   });

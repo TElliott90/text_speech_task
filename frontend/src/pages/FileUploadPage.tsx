@@ -1,33 +1,88 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import FileUploader from "../components/FileUploader";
+import ErrorModal from "../components/ErrorModal/ErrorModal";
 
 export default function FileUploadPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState("");
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audioBlob || !audio) return;
+
+    const url = URL.createObjectURL(audioBlob);
+    audio.src = url;
+    return () => {
+      audio.removeAttribute("src");
+      audio.load();
+      URL.revokeObjectURL(url);
+    };
+  }, [audioBlob]);
 
   async function handleConvertClick() {
-    const formData = new FormData();
     if (!selectedFile) {
       setError("No document selected");
       return;
     }
 
-    formData.append("file", selectedFile);
+    setIsLoading(true);
+    setError("");
+    setAudioBlob(null);
 
-    fetch(import.meta.env.VITE_API_ENDPOINT + "/documents/convert-to-speech", {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => console.log("Response:", response))
-      .catch((error) => {
-        console.error("Error:", error);
-        alert("Error: " + error.message);
-      });
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      const response = await fetch(
+        import.meta.env.VITE_API_ENDPOINT + "/documents/convert-to-speech",
+        { method: "POST", body: formData },
+      );
+
+      if (!response.ok) {
+        const message = `Conversion failed (HTTP ${response.status}). Please try again.`;
+        throw Error(message);
+      }
+
+      const blob = await response.blob();
+
+      if (blob.type.split(";")[0] !== "audio/mpeg" || blob.size === 0) {
+        throw new Error("The server did not return a valid MP3 audio file.");
+      }
+      setAudioBlob(blob);
+      downloadAudio(blob, selectedFile.name);
+    } catch (error) {
+      setError(
+        error instanceof Error && error.message
+          ? error.message
+          : "Unable to convert the document. Please try again.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  function downloadAudio(blob: Blob, filename: string) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Audio - ${filename.replace(/\.[^.]+$/, "") || "output"}.mp3`;
+    document.body.appendChild(a);
+    try {
+      a.click();
+    } finally {
+      a.remove();
+      // Give the browser time to begin reading the download before cleanup.
+      window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    }
+    setSelectedFile(null);
   }
 
   return (
     <main className="upload-page">
-      <section className="upload-card" aria-labelledby="upload-heading">
+      <section className="upload-card">
         <h2 id="upload-heading">Upload a file</h2>
 
         <p className="upload-description">
@@ -36,7 +91,9 @@ export default function FileUploadPage() {
         </p>
 
         <FileUploader
+          isLoading={isLoading}
           onFileSelect={(file, validationError) => {
+            setAudioBlob(null);
             setSelectedFile(file);
             setError(validationError);
           }}
@@ -46,7 +103,7 @@ export default function FileUploadPage() {
           TXT, PDF, DOC or DOCX
         </p>
 
-        <div className="file-status" aria-live="polite" aria-atomic="true">
+        <div className="file-status">
           {error ? (
             <p className="file-error">{error}</p>
           ) : (
@@ -59,11 +116,13 @@ export default function FileUploadPage() {
         <button
           className="send-button"
           type="button"
-          disabled={!selectedFile}
+          disabled={!selectedFile || !!error || isLoading}
           onClick={handleConvertClick}
         >
-          Convert
+          {isLoading ? "Converting…" : "Convert"}
         </button>
+
+        {error && <ErrorModal message={error} onClose={() => setError("")} />}
       </section>
     </main>
   );

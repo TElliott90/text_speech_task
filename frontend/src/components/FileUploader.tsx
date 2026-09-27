@@ -2,10 +2,14 @@ import { useRef } from "react";
 import type { ChangeEvent } from "react";
 
 type FileUploaderProps = {
+  isLoading: boolean;
   onFileSelect: (file: File | null, error: string) => void;
 };
 
-export default function FileUploader({ onFileSelect }: FileUploaderProps) {
+export default function FileUploader({
+  isLoading,
+  onFileSelect,
+}: FileUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -20,7 +24,6 @@ export default function FileUploader({ onFileSelect }: FileUploaderProps) {
       onFileSelect(file, "");
     }
 
-    // Allow selecting the same file again.
     event.target.value = "";
   }
 
@@ -36,39 +39,24 @@ export default function FileUploader({ onFileSelect }: FileUploaderProps) {
       <button
         className="upload-button"
         type="button"
+        disabled={isLoading}
         aria-label="Choose a file"
         aria-describedby="file-types"
         onClick={() => inputRef.current?.click()}
       >
-        {inputRef.current?.files[0] ? (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M20 6 9 17l-5-5" />
-          </svg>
-        ) : (
-          <svg
-            width="36"
-            height="36"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M12 16V3m-5 5 5-5 5 5M4 15v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5" />
-          </svg>
-        )}
+        <svg
+          aria-hidden="true"
+          width="36"
+          height="36"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M12 16V3m-5 5 5-5 5 5M4 15v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5" />
+        </svg>
       </button>
     </>
   );
