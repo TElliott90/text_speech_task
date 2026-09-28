@@ -29,5 +29,3 @@ Additional generated syntax was observered along with misunderstood instructions
 ## Commit 5 - "Audio file to be sent back to the user"
 
 ## Commit 6 - "The file can either be played or downloaded by the user"
-
-Prompt - "Create a dialog for error messages within the ErrorModal.tsx file"

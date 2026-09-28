@@ -23,12 +23,16 @@ Additional considerations to be made include the exclusion of certain filetypes,
 ### Tech stack
 
 The tech stack is not the key challenge here, therefore I will be using my familiar stack:
-**Frontend**
-Vite - Bundler
-React Typescript
 
-**Backend**
+#### Frontend
+
+Vite - Build
+React (Typescript)
+
+#### Backend
+
 NestJs
+Typescript
 
 ### Commits:
 
@@ -49,12 +53,12 @@ With the api now reaching the service, it was time for integrating with the text
 
 #### Text output must then be sent to AWS Polly (Eleven Labs?) for processing
 
-After testing out AWS Textract with a sample document (see images)
+After testing out AWS Textract with a sample document (see images below)
 
-I decided it was not the right solution for my usecase. The service was great at text detection however, contextual extraction is what was needed, otherwise every text available on the document (page number, dates, text found within sample images etc ) would also be extracted and would require filtering. Using a gemini
+![Textract screenshot1](./1.Example%20Files/Textract-screenshot-1.png)
+![Texract screenshot2](./1.Example%20Files/Textract-screenshot-2.png)
 
-- Installed Gemini dependancy and followed docs shown [here] (https://aistudio.google.com/docs/get-started?codelanguage=javascript)
-- Installation revealed 22 vulnerabilities (5 low, 10 moderate, 7 high), needed to run `npm audit fix --force` to fully resolve the vulnerability issues
+I decided it was not the right solution for my usecase. The service was great at text detection however, contextual extraction is what was needed, otherwise every text available on the document (page number, dates, text found within sample images etc ) would also be extracted and would require filtering. Using Google gemini to extract the document from the text using the docs shown [here] (https://aistudio.google.com/docs/get-started?codelanguage=javascript). The installation revealed 22 vulnerabilities (5 low, 10 moderate, 7 high), needed to run `npm audit fix --force` to fully resolve the vulnerability issues
 
 - Used google's [docs](https://aistudio.google.com/docs/document-processing?codelanguage=javascript) for sending files
 
@@ -68,7 +72,7 @@ I decided it was not the right solution for my usecase. The service was great at
 
 #### The file can either be played or downloaded by the user
 
-- Took some time to understand the concept of converting file data i.e the audio is being returned as a Stream
+- Took some time to understand the concept of converting audio file data of a initially a readable stream, to a Buffer before constructing a [streamablefile](https://docs.nestjs.com/http/file-upload#streaming-files)
 - Decision was made to download directly after conversion was completed instead of utilising an audio player for simplicity sake.
 
 ### Acceptance Criteria:
@@ -85,17 +89,15 @@ I decided it was not the right solution for my usecase. The service was great at
 
 ## Closing Remarks
 
-For a web application, the fundamentals of presenting a UI to a user, making requests to a server and processing that information before returning information exist in most projects. Despite this straightforward approach, there are many considerations such as tooling, services
+For a web application, the fundamentals of presenting a UI to a user, making requests to a server and processing that information before returning new information exist in most projects. Despite this straightforward approach, there are still many considerations such as tooling and services (including their own limitations) which change during development when they don't become feasable, while also factoring in strict discipline on what to build and what to leave to avoid feature creep. Additional layers must also be applied to a 'happy route' such as error handling, testing, security considerations etc to which all adds to extended time of a project. I do not believe that the overall time spent on developing the solution has taken much more than 3 hours, though more time has been added in writing these logs. The lessons learnt from this project have revealed additional factors to consider when chosing external services for a solution i.e. contraints of the service, the extraction of text and nuances of what it means to retrieve the specific information from the content, and the handling of files (specifically audio) and the conversions required to transport and download the data.
 
-. This is, ofcourse, an over simplification of the workflow and additional layers must also be applied to a 'happy route' such as error handling, testing, security considerations etc
-
-Before exceeding limits, an example of the audio [output](./1.Example%20Files/Audio%20-%20Example%20Report-%20Current%20Cloud%20Technology%20Trends%20in%20the%20UK.mp3) was retrieved from this [file](./1.Example%20Files/Example%20Report-%20Current%20Cloud%20Technology%20Trends%20in%20the%20UK.pdf). The audio script alters from the document as the prompt used for extracting was requesting the key points from the document, which is not a bad thing depending if you're after a quick summary of key points of a large document. This should be taken into consideration and relayed back to the user to ensure they're not expecting a word-for-word extract or put in place an option which specifies how the document should be interpreted.
+Before exceeding limits of Eleven Labs, an example of the audio [output](./1.Example%20Files/Audio%20-%20Example%20Report-%20Current%20Cloud%20Technology%20Trends%20in%20the%20UK.mp3) was retrieved from this [file](./1.Example%20Files/Example%20Report-%20Current%20Cloud%20Technology%20Trends%20in%20the%20UK.pdf). The audio script alters from the document as the prompt used for extracting was requesting the key points from the document, which is not a bad thing depending if you're after a quick summary of key points of a large document. This should be taken into consideration and relayed back to the user to ensure they're not expecting a word-for-word extract or put in place an option which specifies how the document should be interpreted.
 
 ### Notes
 
-- Larger projects would require seperate files for api calls, types etc
+- Larger projects would require their own seperate files for api calls, types etc
 - Improvements could be made to UI to better illustrate the ability to remove files
-- Could add an additional option to determine whether or not to extract all of the main text or just the key points (for long documents)
+- Could add an additional option to pass with the conversion request to determine whether or not to extract all of the main text or just the key points (for long documents)
 - Conversion time can take a while, animated loading icon might help users with the wait.
 - Using LLM (Gemini) can risk from source document. Explicit prompt instructions must be used to faithfully follow the content.
-- A 5000 character limit is placed on the Eleven Labs service. Shorter
+- A 5000 character limit is placed on the Eleven Labs service. Shorter passages are best used.
