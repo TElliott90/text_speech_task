@@ -95,6 +95,7 @@ Before exceeding limits of Eleven Labs, an example of the audio [output](./1.Exa
 
 ### Notes
 
+- Ideally progress should not be measured in terms of commits as additional changes may be required that allows smaller commits to be made with granular changes.
 - Larger projects would require their own seperate files for api calls, types etc
 - Improvements could be made to UI to better illustrate the ability to remove files
 - Could add an additional option to pass with the conversion request to determine whether or not to extract all of the main text or just the key points (for long documents)
